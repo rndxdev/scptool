@@ -44,7 +44,15 @@ else
     echo "  Virtual environment already exists."
 fi
 
-source "$BACKEND_DIR/venv/bin/activate"
+# Detect venv path (Windows/Git Bash uses Scripts/, Unix uses bin/)
+if [ -d "$BACKEND_DIR/venv/bin" ]; then
+    source "$BACKEND_DIR/venv/bin/activate"
+elif [ -d "$BACKEND_DIR/venv/Scripts" ]; then
+    source "$BACKEND_DIR/venv/Scripts/activate"
+else
+    echo "Error: Could not find activate script in venv."
+    exit 1
+fi
 pip install --upgrade pip -q
 pip install -r "$BACKEND_DIR/requirements.txt" -q
 
