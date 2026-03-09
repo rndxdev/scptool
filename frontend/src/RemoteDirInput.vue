@@ -82,10 +82,9 @@ function onInput(value) {
 }
 
 function onFocus() {
+  // Only reshow existing suggestions, don't fire new requests on focus
   if (suggestions.value.length) {
     showDropdown.value = true
-  } else {
-    debouncedFetch(props.modelValue)
   }
 }
 
@@ -199,10 +198,12 @@ async function fetchSuggestions(value) {
   loading.value = true
   try {
     const result = await api.browseRemote(props.serverId, parentDir)
-    if (id !== fetchId) return // stale
+    if (id !== fetchId) {
+      loading.value = false
+      return
+    }
     const entries = result.entries || []
     dirCache.set(parentDir, entries)
-    // Also cache the resolved path if different
     if (result.path !== parentDir) {
       dirCache.set(result.path, entries)
     }

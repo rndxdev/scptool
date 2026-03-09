@@ -25,11 +25,16 @@ venv_python = os.path.join(backend_dir, "venv", "Scripts", "pythonw.exe")
 if not os.path.isfile(venv_python):
     venv_python = os.path.join(backend_dir, "venv", "Scripts", "python.exe")
 
-# Start the backend server (hidden)
+# Fully suppress any console window from the subprocess tree
+startupinfo = subprocess.STARTUPINFO()
+startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+startupinfo.wShowWindow = 0  # SW_HIDE
+
 server_process = subprocess.Popen(
     [venv_python, "-m", "uvicorn", "main:app", "--host", "127.0.0.1", "--port", str(PORT)],
     cwd=backend_dir,
     creationflags=subprocess.CREATE_NO_WINDOW,
+    startupinfo=startupinfo,
     stdout=subprocess.DEVNULL,
     stderr=subprocess.DEVNULL,
 )
