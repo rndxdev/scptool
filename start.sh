@@ -3,13 +3,24 @@
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# Detect venv path (Windows uses Scripts/, Unix uses bin/)
+if [ -d "$SCRIPT_DIR/backend/venv/bin" ]; then
+    ACTIVATE="$SCRIPT_DIR/backend/venv/bin/activate"
+elif [ -d "$SCRIPT_DIR/backend/venv/Scripts" ]; then
+    ACTIVATE="$SCRIPT_DIR/backend/venv/Scripts/activate"
+else
+    echo "Error: Python virtual environment not found in backend/venv/"
+    echo "Create one with: cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt"
+    exit 1
+fi
+
 echo "Starting SCP Tool..."
 echo ""
 
 # Start backend
 echo "[Backend] Starting FastAPI on http://127.0.0.1:8000"
 cd "$SCRIPT_DIR/backend"
-source venv/Scripts/activate
+source "$ACTIVATE"
 python main.py &
 BACKEND_PID=$!
 
